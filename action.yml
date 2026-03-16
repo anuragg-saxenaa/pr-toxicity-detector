@@ -1,0 +1,13 @@
+name: PR Toxicity Detector
+description: Detects potential bot-generated or low-quality PRs
+author: anuragg-saxenaa
+
+inputs:
+  config:
+    description: 'Path to config file'
+    required: false
+    default: 'config.json'
+
+runs:
+  using: 'node16'
+  main: 'index.js'
