@@ -2,27 +2,36 @@
 
 GitHub Action that automatically detects potential bot-generated or low-quality PRs using behavioral analysis.
 
+## Problem
+
+AI coding agents are flooding open source repos with low-quality PRs that waste maintainer time and damage community trust. This action provides a first line of defense.
+
 ## Installation
 
-1. Add to your repository:
+Create a workflow file (e.g., `.github/workflows/pr-toxicity.yml`):
+
 ```yaml
-- name: PR Toxicity Detector
-  uses: anuragg-saxenaa/pr-toxicity-detector@v1.0.0
+name: PR Toxicity Detector
+
+on:
+  pull_request:
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PR Toxicity Detector
+        uses: anuragg-saxenaa/pr-toxicity-detector@v1
+        with:
+          config: 'config.json'
 ```
-
-2. Configure thresholds in `config.json` if needed.
-
-## Usage
-
-The action triggers on pull request events and performs:
-
-1. **Account Age Check**: Flags accounts < 7 days old
-2. **PR Frequency Check**: Flags accounts with > 3 PRs in last 24h
-3. **Message Similarity Check**: Flags commits with > 80% similarity to other commits
 
 ## Configuration
 
 Edit `config.json` to adjust thresholds:
+
 ```json
 {
   "accountAgeThreshold": 7,
@@ -32,11 +41,24 @@ Edit `config.json` to adjust thresholds:
 }
 ```
 
-## Output
+| Threshold | Default | Description |
+|-----------|---------|-------------|
+| `accountAgeThreshold` | 7 | Flag accounts younger than N days |
+| `prFrequencyThreshold` | 3 | Flag if author opened > N PRs in 24h |
+| `similarityThreshold` | 0.8 | Flag commits with > N% message similarity |
+| `blockMerge` | false | Set to `true` to require status check pass |
 
-- Posts warning comment on flagged PRs
-- (Optional) Blocks merge if `blockMerge: true`
-- Logs analysis to GitHub Actions output
+## How It Works
+
+1. **Account Age Check**: Fetches the PR author's account creation date and flags if younger than `accountAgeThreshold` days.
+2. **Message Similarity Check**: Computes Jaccard similarity between recent commit messages. Flags if similarity exceeds `similarityThreshold`.
+3. **Warning Comment**: Posts a ⚠️ comment on flagged PRs.
+
+## Exit Codes
+
+- `0`: PR passed (no flags)
+- `1`: Action error
+- `1`: PR flagged (action fails to prevent merge by default)
 
 ## License
 

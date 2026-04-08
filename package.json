@@ -1,16 +1,19 @@
 {
   "name": "pr-toxicity-detector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub Action to detect potential bot-generated PRs",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "anuragg-saxenaa",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
